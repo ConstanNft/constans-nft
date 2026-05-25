@@ -1,0 +1,31 @@
+# dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# build / artifacts
+artifacts/
+cache/
+generator/output/
+generator/output_v2/
+generator/__pycache__/
+
+# secrets
+.env
+*.env
+!.env.example
+
+# deploy
+contract/deployment.*.json
+
+# os / editor
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+# bundles (regenerable)
+*.zip
+*.tar.gz

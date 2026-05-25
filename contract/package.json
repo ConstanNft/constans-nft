@@ -1,0 +1,34 @@
+{
+  "name": "constants-nft-contract",
+  "version": "1.0.0",
+  "description": "Constants NFT — Genesis 333 (Base mainnet)",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:mainnet": "hardhat run script/deploy.js --network mainnet",
+    "deploy:sepolia": "hardhat run script/deploy.js --network sepolia",
+    "deploy:base": "hardhat run script/deploy.js --network base",
+    "deploy:basesepolia": "hardhat run script/deploy.js --network baseSepolia",
+    "verify:mainnet": "hardhat run script/verify.js --network mainnet",
+    "verify:base": "hardhat run script/verify.js --network base",
+    "metadata": "node script/buildMetadata.js",
+    "ipfs:images": "node script/uploadImages.js",
+    "ipfs:metadata": "node script/uploadMetadata.js",
+    "open:mainnet": "hardhat run script/openMint.js --network mainnet",
+    "open:base": "hardhat run script/openMint.js --network base",
+    "withdraw:mainnet": "hardhat run script/withdraw.js --network mainnet",
+    "withdraw:base": "hardhat run script/withdraw.js --network base"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.10",
+    "hardhat": "^2.22.0",
+    "dotenv": "^16.4.5"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
+    "erc721a": "^4.3.0",
+    "axios": "^1.7.0",
+    "form-data": "^4.0.0"
+  }
+}

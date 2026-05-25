@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Constants — Mint Genesis 333</title>
+<style>
+:root{
+  --bg:#0a0c12;--bg2:#0e1118;--panel:#12161f;
+  --ink:#e8eaf0;--ink2:#9aa0b0;--ink3:#5a6072;
+  --accent:#a8ff60;--accent2:#60d4ff;--gold:#ffcc66;
+  --err:#ff7070;--ok:#a8ff60;
+  --line:#1f2532;--line2:#2a3142;
+  --mono:'JetBrains Mono','SF Mono',ui-monospace,Menlo,Consolas,monospace;
+  --display:'Inter',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:var(--display);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:40px 40px}
+
+nav{position:sticky;top:0;z-index:50;background:rgba(10,12,18,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
+.brand{font-family:var(--mono);font-weight:600;font-size:14px;letter-spacing:0.05em}
+.brand b{color:var(--accent)}
+.connect-bar{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px}
+.chain-pill{padding:5px 10px;border:1px solid var(--line2);color:var(--ink2);letter-spacing:0.1em}
+.chain-pill.ok{border-color:var(--accent);color:var(--accent)}
+.chain-pill.bad{border-color:var(--err);color:var(--err)}
+
+main{max-width:1080px;margin:0 auto;padding:50px 24px;position:relative;z-index:1}
+
+.hero-tag{font-family:var(--mono);font-size:11px;letter-spacing:0.2em;color:var(--accent);text-transform:uppercase;margin-bottom:14px}
+.hero-tag::before{content:'◆ ';color:var(--gold)}
+h1{font-size:54px;font-weight:800;letter-spacing:-0.03em;line-height:1.05;margin-bottom:20px}
+h1 .accent{color:var(--accent);font-style:italic;font-weight:300}
+.lede{color:var(--ink2);font-size:17px;line-height:1.65;max-width:640px;margin-bottom:40px}
+
+.mint-card{
+  background:var(--panel);border:1px solid var(--line2);
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  margin-bottom:36px;
+}
+.mint-left{padding:36px 32px;border-right:1px solid var(--line)}
+.mint-right{padding:36px 32px;display:flex;flex-direction:column;gap:18px}
+
+.progress-wrap{margin-bottom:28px}
+.progress-label{font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;display:flex;justify-content:space-between}
+.progress-label b{color:var(--accent)}
+.progress-bar{height:6px;background:var(--bg2);overflow:hidden;border:1px solid var(--line)}
+.progress-fill{height:100%;background:var(--accent);width:0%;transition:width .6s ease}
+
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.stat{border-left:2px solid var(--accent);padding-left:14px}
+.stat-val{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--ink)}
+.stat-lbl{font-size:10px;color:var(--ink3);letter-spacing:0.15em;text-transform:uppercase;margin-top:3px;font-family:var(--mono)}
+
+.qty-pick{margin-bottom:6px}
+.qty-pick label{font-family:var(--mono);font-size:10px;letter-spacing:0.15em;color:var(--ink3);text-transform:uppercase;margin-bottom:8px;display:block}
+.qty-row{display:flex;align-items:center;gap:0;background:var(--bg2);border:1px solid var(--line2)}
+.qty-btn{background:transparent;border:none;color:var(--ink);font-size:18px;font-family:var(--mono);width:46px;height:46px;cursor:pointer;font-weight:600}
+.qty-btn:hover{color:var(--accent)}
+.qty-btn:disabled{color:var(--ink3);cursor:not-allowed}
+.qty-input{flex:1;background:transparent;border:none;outline:none;color:var(--ink);text-align:center;font-family:var(--mono);font-size:18px;font-weight:600}
+.qty-quick{display:flex;gap:6px;margin-top:8px}
+.qty-quick button{flex:1;padding:6px 0;background:transparent;border:1px solid var(--line2);color:var(--ink2);font-family:var(--mono);font-size:11px;cursor:pointer;letter-spacing:0.05em}
+.qty-quick button:hover{border-color:var(--accent);color:var(--accent)}
+
+.cost-line{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:13px;color:var(--ink2);padding:14px 0;border-top:1px dashed var(--line2);border-bottom:1px dashed var(--line2)}
+.cost-line b{color:var(--ink);font-size:18px;font-weight:600}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:16px 24px;font-family:var(--mono);font-size:13px;letter-spacing:0.12em;text-transform:uppercase;border:none;cursor:pointer;text-decoration:none;font-weight:600;transition:all .2s;width:100%}
+.btn-primary{background:var(--accent);color:var(--bg)}
+.btn-primary:hover{background:#bfff80;transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--accent)}
+.btn-primary:disabled{background:var(--line2);color:var(--ink3);cursor:not-allowed;transform:none;box-shadow:none}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line2)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+.status{
+  font-family:var(--mono);font-size:12px;
+  padding:14px 16px;border:1px solid var(--line);background:var(--bg2);
+  min-height:46px;display:flex;align-items:center;gap:10px;line-height:1.5;
+}
+.status.info{border-color:var(--accent2);color:var(--accent2)}
+.status.ok{border-color:var(--ok);color:var(--ok)}
+.status.err{border-color:var(--err);color:var(--err)}
+.status a{color:inherit;text-decoration:underline}
+.status .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+.faq-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
+.faq{background:var(--panel);border:1px solid var(--line);padding:22px 20px}
+.faq h4{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px}
+.faq p{color:var(--ink2);font-size:13px;line-height:1.6}
+.faq a{color:var(--accent2);text-decoration:none}
+
+footer{border-top:1px solid var(--line);padding:32px 24px;margin-top:60px;font-family:var(--mono);font-size:11px;color:var(--ink3);text-align:center;letter-spacing:0.1em}
+footer b{color:var(--accent)}
+footer a{color:var(--ink2);text-decoration:none;margin:0 8px}
+footer a:hover{color:var(--accent)}
+
+.cfg-hint{margin-top:16px;padding:14px 18px;background:rgba(255,204,102,0.06);border:1px dashed var(--gold);font-family:var(--mono);font-size:11px;color:var(--gold);line-height:1.7}
+.cfg-hint b{color:var(--gold)}
+.cfg-hint code{background:rgba(0,0,0,.3);padding:2px 6px;color:var(--ink)}
+
+@media (max-width:760px){
+  h1{font-size:36px}
+  .mint-card{grid-template-columns:1fr}
+  .mint-left{border-right:none;border-bottom:1px solid var(--line)}
+  .faq-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">CONSTANTS<b>·</b>NFT</div>
+  <div class="connect-bar">
+    <span id="chainPill" class="chain-pill">— ETHEREUM —</span>
+    <button id="connectBtn" class="btn-ghost" style="padding:8px 14px;font-size:11px;width:auto">Connect Wallet</button>
+  </div>
+</nav>
+
+<main>
+  <div class="hero-tag">Mint open · Genesis Drop</div>
+  <h1>Pull a card.<br><span class="accent">See what you got.</span></h1>
+  <p class="lede">333 generative cards rendered from mathematical constants. Each card is deterministic from its seed. Rarity is sealed at mint. Constants stay constant.</p>
+
+  <div class="mint-card">
+    <div class="mint-left">
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Minted</span><b><span id="mintedNum">—</span> / 333</b></div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="stat-val" id="priceVal">— ETH</div><div class="stat-lbl">Per Card</div></div>
+        <div class="stat"><div class="stat-val" id="walletMinted">—</div><div class="stat-lbl">You Own</div></div>
+      </div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--ink3);line-height:1.8;letter-spacing:0.05em">
+        ▸ ERC-721A on Ethereum mainnet<br>
+        ▸ Max 10 per wallet<br>
+        ▸ Instant reveal · IPFS metadata<br>
+        ▸ 5% creator royalty
+      </div>
+    </div>
+
+    <div class="mint-right">
+      <div class="qty-pick">
+        <label>Quantity</label>
+        <div class="qty-row">
+          <button class="qty-btn" id="qtyMinus">−</button>
+          <input type="number" id="qtyInput" class="qty-input" min="1" max="10" value="1">
+          <button class="qty-btn" id="qtyPlus">+</button>
+        </div>
+        <div class="qty-quick">
+          <button data-q="1">1</button>
+          <button data-q="3">3</button>
+          <button data-q="5">5</button>
+          <button data-q="10">MAX</button>
+        </div>
+      </div>
+      <div class="cost-line">
+        <span>Total</span>
+        <b id="totalCost">— ETH</b>
+      </div>
+      <button id="mintBtn" class="btn btn-primary" disabled>Connect Wallet First</button>
+      <div class="status" id="statusBox" style="display:none"></div>
+    </div>
+  </div>
+
+  <div class="faq-grid">
+    <div class="faq"><h4>How it works</h4><p>Connect wallet → pick quantity → confirm in your wallet. Within ~5 seconds your token is minted and the card materializes on OpenSea, Magic Eden, or any wallet that reads ERC-721 metadata.</p></div>
+    <div class="faq"><h4>Where's the art</h4><p>Stored on IPFS via Pinata. Each token URI returns a JSON pointing to a 880×1210 PNG of the rendered constant. Permanent. No central server. <a href="https://x.com/ConstantsNft" target="_blank">@ConstantsNft</a></p></div>
+    <div class="faq"><h4>Rarity</h4><p>Five tiers exist. Common, Rare, Epic, Legendary, Mythic. Distribution is sealed in the metadata. We won't tell you which token is what. Mint and find out.</p></div>
+  </div>
+
+  <div class="cfg-hint" id="cfgHint" style="display:none">
+    <b>⚠ NOT CONFIGURED</b><br>
+    Open this HTML in a text editor and replace the placeholders near the top of the script:
+    <code>CONTRACT_ADDRESS</code> with your deployed address, and confirm <code>CHAIN_ID</code>.
+    Until then the mint button stays disabled.
+  </div>
+</main>
+
+<footer>
+  <b>CONSTANTS · GENESIS 333</b>
+  &nbsp;·&nbsp;
+  <a href="https://x.com/ConstantsNft" target="_blank">@ConstantsNft</a>
+  <a id="contractLink" href="#" target="_blank">Contract</a>
+  <a id="osLink" href="#" target="_blank">OpenSea</a>
+</footer>
+
+<script>
+/* ════════════════════════════════════════════════════════
+ *  CONFIG  — replace after deployment
+ * ════════════════════════════════════════════════════════ */
+const CONTRACT_ADDRESS = "__CONTRACT_ADDRESS__"; // 0x...
+const CHAIN_ID         = 1;                       // Ethereum mainnet (Base: 8453, testnet sepolia: 11155111)
+const CHAIN_NAME       = "Ethereum";
+const RPC_URL          = "https://eth.llamarpc.com";
+const EXPLORER         = "https://etherscan.io";
+const OS_BASE          = "https://opensea.io/assets/ethereum";
+/* ════════════════════════════════════════════════════════ */
+
+const ABI = [
+  "function mint(uint256 quantity) payable",
+  "function mintPrice() view returns (uint256)",
+  "function totalMinted() view returns (uint256)",
+  "function MAX_SUPPLY() view returns (uint256)",
+  "function MAX_PER_WALLET() view returns (uint256)",
+  "function mintOpen() view returns (bool)",
+  "function mintedBy(address) view returns (uint256)",
+  "function balanceOf(address) view returns (uint256)",
+  "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)"
+];
+
+let provider, signer, contract, account;
+let mintPriceWei = 0n, maxPerWallet = 10, totalMinted = 0;
+let configured = !CONTRACT_ADDRESS.includes("__CONTRACT_ADDRESS__") && CONTRACT_ADDRESS.startsWith("0x");
+
+const $ = id => document.getElementById(id);
+const fmt = wei => (Number(wei) / 1e18).toFixed(4);
+
+function setStatus(kind, html){
+  const b = $('statusBox');
+  b.style.display = 'flex';
+  b.className = 'status ' + kind;
+  b.innerHTML = `<span class="dot"></span><span>${html}</span>`;
+}
+function clearStatus(){ $('statusBox').style.display = 'none'; }
+
+async function loadEthers(){
+  if (window.ethers) return window.ethers;
+  // CDN load (UMD build, no module needed)
+  await new Promise((res, rej)=>{
+    const s = document.createElement('script');
+    s.src = "https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js";
+    s.onload = res; s.onerror = ()=>rej(new Error("ethers cdn blocked"));
+    document.head.appendChild(s);
+  });
+  return window.ethers;
+}
+
+async function refreshChainPill(){
+  const pill = $('chainPill');
+  if (!window.ethereum){ pill.textContent = 'NO WALLET'; pill.className='chain-pill bad'; return; }
+  try{
+    const cid = parseInt(await window.ethereum.request({method:'eth_chainId'}), 16);
+    if (cid === CHAIN_ID){ pill.textContent = `${CHAIN_NAME.toUpperCase()} ✓`; pill.className='chain-pill ok'; }
+    else { pill.textContent = `WRONG CHAIN (${cid})`; pill.className='chain-pill bad'; }
+  } catch(e){ /* */ }
+}
+
+async function ensureChain(){
+  const cid = parseInt(await window.ethereum.request({method:'eth_chainId'}), 16);
+  if (cid === CHAIN_ID) return;
+  try{
+    await window.ethereum.request({
+      method:'wallet_switchEthereumChain',
+      params:[{ chainId: '0x' + CHAIN_ID.toString(16) }]
+    });
+  } catch(err){
+    if (err.code === 4902){
+      await window.ethereum.request({
+        method:'wallet_addEthereumChain',
+        params:[{
+          chainId: '0x' + CHAIN_ID.toString(16),
+          chainName: CHAIN_NAME,
+          rpcUrls:[RPC_URL],
+          blockExplorerUrls:[EXPLORER],
+          nativeCurrency:{ name:'Ether', symbol:'ETH', decimals:18 }
+        }]
+      });
+    } else throw err;
+  }
+  await refreshChainPill();
+}
+
+async function refreshState(){
+  if (!configured || !contract) return;
+  try{
+    const [tm, mp, mo, mpw] = await Promise.all([
+      contract.totalMinted(),
+      contract.mintPrice(),
+      contract.mintOpen(),
+      contract.MAX_PER_WALLET(),
+    ]);
+    totalMinted = Number(tm);
+    mintPriceWei = mp;
+    maxPerWallet = Number(mpw);
+    $('mintedNum').textContent = totalMinted;
+    $('progressFill').style.width = (totalMinted/333*100).toFixed(2) + '%';
+    $('priceVal').textContent = fmt(mp) + ' ETH';
+
+    if (account){
+      const minted = Number(await contract.mintedBy(account));
+      $('walletMinted').textContent = minted;
+      const remaining = Math.max(0, maxPerWallet - minted);
+      $('qtyInput').max = Math.max(1, Math.min(remaining, 10));
+    }
+
+    updateCost();
+    if (!mo){
+      $('mintBtn').disabled = true;
+      $('mintBtn').textContent = 'Mint Closed';
+    } else if (totalMinted >= 333){
+      $('mintBtn').disabled = true;
+      $('mintBtn').textContent = 'Sold Out';
+    } else if (account){
+      $('mintBtn').disabled = false;
+      $('mintBtn').textContent = 'Mint Now →';
+    }
+  } catch(err){
+    console.error(err);
+    setStatus('err', 'Failed to read contract. Check CONTRACT_ADDRESS / network.');
+  }
+}
+
+function updateCost(){
+  const q = parseInt($('qtyInput').value || '1', 10);
+  const total = (Number(mintPriceWei) * q) / 1e18;
+  $('totalCost').textContent = total.toFixed(4) + ' ETH';
+}
+
+async function connect(){
+  if (!window.ethereum){
+    setStatus('err','No Ethereum wallet found. Install MetaMask, Rabby, or Coinbase Wallet.');
+    return;
+  }
+  try{
+    const e = await loadEthers();
+    await ensureChain();
+    const accs = await window.ethereum.request({method:'eth_requestAccounts'});
+    account = accs[0];
+    provider = new e.BrowserProvider(window.ethereum);
+    signer = await provider.getSigner();
+    contract = new e.Contract(CONTRACT_ADDRESS, ABI, signer);
+    $('connectBtn').textContent = account.slice(0,6) + '…' + account.slice(-4);
+    await refreshState();
+    setStatus('ok', `Connected ${account.slice(0,6)}…${account.slice(-4)}`);
+  } catch(err){
+    console.error(err);
+    setStatus('err', err.message || 'Connection failed.');
+  }
+}
+
+async function mint(){
+  if (!signer || !contract){ await connect(); if (!contract) return; }
+  const q = Math.max(1, Math.min(10, parseInt($('qtyInput').value||'1',10)));
+  const cost = mintPriceWei * BigInt(q);
+  setStatus('info', `Confirming in wallet…`);
+  $('mintBtn').disabled = true;
+  try{
+    const tx = await contract.mint(q, { value: cost });
+    setStatus('info', `Tx submitted: <a href="${EXPLORER}/tx/${tx.hash}" target="_blank">${tx.hash.slice(0,10)}…</a>`);
+    const r = await tx.wait();
+    setStatus('ok', `✓ Minted ${q} card${q>1?'s':''}! Tx <a href="${EXPLORER}/tx/${tx.hash}" target="_blank">${tx.hash.slice(0,10)}…</a>. Check OpenSea in ~30s.`);
+    await refreshState();
+  } catch(err){
+    console.error(err);
+    let msg = err.shortMessage || err.message || 'Mint failed.';
+    if (msg.includes('user rejected')) msg = 'You rejected the transaction.';
+    setStatus('err', msg);
+    $('mintBtn').disabled = false;
+  }
+}
+
+// === wire up ===
+$('qtyMinus').onclick = ()=>{ const v = +$('qtyInput').value; $('qtyInput').value = Math.max(1, v-1); updateCost(); };
+$('qtyPlus').onclick = ()=>{ const v = +$('qtyInput').value; const max = +$('qtyInput').max || 10; $('qtyInput').value = Math.min(max, v+1); updateCost(); };
+$('qtyInput').oninput = updateCost;
+document.querySelectorAll('.qty-quick button').forEach(b=>{
+  b.onclick = ()=>{ $('qtyInput').value = b.dataset.q; updateCost(); };
+});
+$('connectBtn').onclick = connect;
+$('mintBtn').onclick = mint;
+
+if (!configured){
+  $('cfgHint').style.display = 'block';
+  $('mintBtn').textContent = 'Not Configured';
+}
+$('contractLink').href = configured ? `${EXPLORER}/address/${CONTRACT_ADDRESS}` : '#';
+$('osLink').href       = configured ? `${OS_BASE}/${CONTRACT_ADDRESS}` : '#';
+
+// Read-only init via public RPC so visitors see live counts before connecting
+(async ()=>{
+  if (!configured) return;
+  try{
+    const e = await loadEthers();
+    const ro = new e.JsonRpcProvider(RPC_URL);
+    contract = new e.Contract(CONTRACT_ADDRESS, ABI, ro);
+    await refreshState();
+  } catch(err){
+    console.warn('Read-only init failed:', err);
+  }
+})();
+
+if (window.ethereum){
+  window.ethereum.on('chainChanged', ()=>location.reload());
+  window.ethereum.on('accountsChanged', accs=>{
+    account = accs[0];
+    if (account){ $('connectBtn').textContent = account.slice(0,6)+'…'+account.slice(-4); refreshState(); }
+    else { location.reload(); }
+  });
+}
+refreshChainPill();
+</script>
+</body>
+</html>
