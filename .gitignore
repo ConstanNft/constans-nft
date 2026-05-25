@@ -8,9 +8,6 @@ venv/
 # build / artifacts
 artifacts/
 cache/
-generator/output/
-generator/output_v2/
-generator/__pycache__/
 
 # secrets
 .env

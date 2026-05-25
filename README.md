@@ -31,15 +31,9 @@ constans-nft/
 │   ├── hardhat.config.js
 │   └── README.md                   full deploy walkthrough
 │
-├── web/              Marketing + gallery + mint site
-│   └── index.html                  single-file site
-│                                   (333 HD thumbs base64-embedded ~28MB)
-│
-└── generator/        Python scripts that produced the 333 cards
-    ├── generate_v2.py              main render engine (21 formulas)
-    ├── brand_assets.py             palette + brand utilities
-    ├── build_thumbs_hd.py          PNG → base64 JSON for web embed
-    └── build_html.py               assembles single-file web/index.html
+└── web/              Marketing + gallery + mint site
+    └── index.html                  single-file site
+                                    (333 HD thumbs base64-embedded ~28MB)
 ```
 
 ## Quick start
@@ -66,15 +60,6 @@ npm run deploy:sepolia        # test gratis dulu
 npm run deploy:mainnet        # saat gas rendah
 npm run verify:mainnet
 npm run open:mainnet
-```
-
-### Regenerate the 333 cards (optional)
-```bash
-cd generator
-python3 -m venv .venv && source .venv/bin/activate
-pip install pillow numpy
-python3 generate_v2.py 333
-# outputs to ./output_v2/ (333 PNG + collection.json)
 ```
 
 ## Costs (Ethereum mainnet)
