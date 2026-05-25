@@ -34,44 +34,7 @@ constans-nft/
 └── web/              Marketing + gallery + mint site
     └── index.html                  single-file site
                                     (333 HD thumbs base64-embedded ~28MB)
-```
-
-## Quick start
-
-### Run the website locally
-```bash
-# any static server works — index.html has zero deps
-cd web
-python3 -m http.server 8000
-# open http://localhost:8000
-```
-
-### Deploy the contract
-See [`contract/README.md`](contract/README.md) for the full step-by-step (~30 minutes total). TL;DR:
-
-```bash
-cd contract
-npm install
-cp .env.example .env          # fill in keys
-npm run ipfs:images           # → IMAGES_CID
-npm run metadata
-npm run ipfs:metadata         # → METADATA_CID
-npm run deploy:sepolia        # test gratis dulu
-npm run deploy:mainnet        # saat gas rendah
-npm run verify:mainnet
-npm run open:mainnet
-```
-
-## Costs (Ethereum mainnet)
-
-```
-Deploy contract        ~ 0.05–0.20 ETH ($150–600)   (watch etherscan.io/gastracker)
-Verify on Etherscan    free
-IPFS pinning           free (Pinata 1GB free tier)
-Per-mint gas (user)    ~ $4–15
-Withdraw / setMintOpen ~ $1–3
-```
-
+````
 ## The 21 constants
 
 | Code | Name | Discoverer | Year |
