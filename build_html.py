@@ -39,6 +39,68 @@ html = r'''<!DOCTYPE html>
 html,body{background:var(--bg);color:var(--ink);font-family:var(--display);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
 body{overflow-x:hidden}
 
+/* === SPLASH === */
+.splash{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:32px;
+  transition:opacity .45s ease, visibility .45s;
+}
+.splash.gone{opacity:0;visibility:hidden;pointer-events:none}
+.splash::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.splash-mark{
+  font-family:var(--mono);color:var(--accent);
+  font-size:11px;letter-spacing:0.25em;text-transform:uppercase;
+  position:relative;z-index:2;
+}
+.splash-mark::before{content:'◆ ';color:var(--gold)}
+.splash-eq{
+  font-family:var(--mono);font-size:34px;color:var(--ink);
+  letter-spacing:0;line-height:1;
+  position:relative;z-index:2;
+  text-align:center;
+  text-shadow:0 0 24px rgba(168,255,96,0.18);
+}
+.splash-eq .accent{color:var(--accent)}
+.splash-sub{
+  font-family:var(--mono);font-size:10px;color:var(--ink3);
+  letter-spacing:0.18em;text-transform:uppercase;
+  position:relative;z-index:2;
+}
+.splash-bar{
+  width:min(360px,72vw);height:1px;background:var(--line2);
+  position:relative;z-index:2;overflow:hidden;
+}
+.splash-bar::after{
+  content:'';position:absolute;top:0;left:-40%;width:40%;height:100%;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  animation:splash-sweep 1.4s ease-in-out infinite;
+}
+.splash-status{
+  font-family:var(--mono);font-size:9px;color:var(--ink3);
+  letter-spacing:0.2em;text-transform:uppercase;
+  position:relative;z-index:2;font-variant-numeric:tabular-nums;
+}
+.splash-status b{color:var(--accent2);font-weight:500}
+@keyframes splash-sweep{
+  0%{left:-40%}
+  100%{left:100%}
+}
+@media (max-width:640px){
+  .splash-eq{font-size:24px}
+  .splash-bar{width:80vw}
+}
+
+/* Reduce hero/scroll flicker pre-paint */
+body.loading{overflow:hidden}
+
 /* === GRID NOISE BG === */
 body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
@@ -277,6 +339,24 @@ section{padding:80px 32px;max-width:1280px;margin:0 auto;position:relative;z-ind
   display:flex;align-items:center;justify-content:center;
 }
 .modal-close:hover{border-color:var(--accent);color:var(--accent)}
+.modal-nav{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:5;
+  width:40px;height:64px;
+  background:rgba(10,12,18,0.7);border:1px solid var(--line2);color:var(--ink2);
+  cursor:pointer;font-size:28px;line-height:1;font-weight:300;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+  font-family:var(--mono);
+}
+.modal-nav:hover{background:var(--bg);border-color:var(--accent);color:var(--accent)}
+.modal-nav-prev{left:-50px}
+.modal-nav-next{right:-50px}
+.modal-hint{
+  margin-top:18px;font-family:var(--mono);font-size:9px;letter-spacing:0.18em;
+  color:var(--ink3);text-transform:uppercase;
+  display:flex;justify-content:center;align-items:center;gap:10px;
+  padding-top:14px;border-top:1px solid var(--line);
+}
 .modal-img{background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
 .modal-img img{width:100%;max-width:340px;height:auto;display:block}
 .modal-body{padding:36px 32px;display:flex;flex-direction:column;justify-content:center}
@@ -354,8 +434,10 @@ section{padding:80px 32px;max-width:1280px;margin:0 auto;position:relative;z-ind
   padding:18px 20px;transition:all .2s;
   display:flex;flex-direction:column;gap:8px;
   position:relative;overflow:hidden;
+  cursor:pointer;
 }
 .const-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.const-card:hover .const-strip img{filter:saturate(1.1)}
 .const-card::before{
   content:attr(data-code);
   position:absolute;top:14px;right:14px;
@@ -369,7 +451,137 @@ section{padding:80px 32px;max-width:1280px;margin:0 auto;position:relative;z-ind
   padding:10px 12px;background:var(--bg);border:1px dashed var(--line);
   word-break:break-word;
 }
-.const-meta{font-family:var(--mono);font-size:10px;color:var(--ink3);letter-spacing:0.08em;margin-top:auto;padding-top:6px}
+.const-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:4px;
+}
+.const-strip img{
+  width:100%;aspect-ratio:1;object-fit:contain;
+  border:1px solid var(--line);transition:filter .2s, border-color .2s;
+  background:var(--bg);padding:2px;
+}
+.const-meta{font-family:var(--mono);font-size:10px;color:var(--ink3);letter-spacing:0.08em;margin-top:auto;padding-top:6px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.const-meta .const-cta{
+  color:var(--accent);font-weight:500;
+  white-space:nowrap;font-size:9px;
+}
+.const-card:hover .const-cta{text-decoration:underline}
+
+/* === FORMULA DEEP-DIVE MODAL === */
+.fmodal-bg{
+  position:fixed;inset:0;background:rgba(5,7,11,0.88);backdrop-filter:blur(8px);
+  z-index:200;display:none;align-items:center;justify-content:center;padding:24px;
+}
+.fmodal-bg.open{display:flex}
+.fmodal{
+  background:var(--panel);border:1px solid var(--line2);
+  max-width:780px;width:100%;max-height:88vh;overflow:auto;
+  position:relative;
+}
+.fmodal-close{
+  position:absolute;top:14px;right:14px;
+  width:32px;height:32px;border:1px solid var(--line2);background:var(--bg);
+  color:var(--ink2);font-size:18px;cursor:pointer;line-height:1;
+  display:flex;align-items:center;justify-content:center;z-index:2;
+  transition:all .2s;
+}
+.fmodal-close:hover{color:var(--accent);border-color:var(--accent)}
+.fmodal-head{
+  padding:32px 36px 24px;border-bottom:1px solid var(--line);
+  position:relative;
+}
+.fmodal-tag{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.2em;
+  color:var(--accent);text-transform:uppercase;margin-bottom:10px;
+}
+.fmodal-tag::before{content:'◆ ';color:var(--gold)}
+.fmodal-name{
+  font-size:30px;font-weight:700;letter-spacing:-0.02em;color:var(--ink);
+  margin-bottom:14px;line-height:1.1;
+}
+.fmodal-eq{
+  font-family:var(--mono);font-size:14px;color:var(--accent2);
+  padding:14px 16px;background:var(--bg);border:1px dashed var(--line2);
+  word-break:break-word;line-height:1.5;
+}
+.fmodal-meta{
+  display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;
+  font-family:var(--mono);font-size:10px;
+}
+.fmodal-meta span{
+  padding:4px 10px;background:var(--bg);border:1px solid var(--line);
+  color:var(--ink2);letter-spacing:0.08em;text-transform:uppercase;
+}
+.fmodal-body{padding:28px 36px}
+.fmodal-section{margin-bottom:24px}
+.fmodal-section:last-child{margin-bottom:0}
+.fmodal-h{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.18em;
+  color:var(--ink3);text-transform:uppercase;margin-bottom:10px;
+}
+.fmodal-h::before{content:'╱╱ '}
+.fmodal-text{color:var(--ink2);font-size:14px;line-height:1.7}
+.fmodal-text b{color:var(--ink);font-weight:500}
+.fmodal-variants{
+  display:grid;grid-template-columns:repeat(6,1fr);gap:6px;
+}
+.fmodal-variants img{
+  width:100%;aspect-ratio:1;object-fit:contain;
+  border:1px solid var(--line);background:var(--bg);padding:3px;
+  transition:transform .2s, border-color .2s;cursor:pointer;
+}
+.fmodal-variants img:hover{transform:scale(1.04);border-color:var(--accent)}
+.fmodal-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+  font-family:var(--mono);
+}
+.fmodal-stats .fst{
+  background:var(--bg);border:1px solid var(--line);padding:12px 14px;
+}
+.fmodal-stats .fst-v{font-size:18px;font-weight:600;color:var(--ink);line-height:1}
+.fmodal-stats .fst-l{font-size:9px;color:var(--ink3);letter-spacing:0.15em;text-transform:uppercase;margin-top:6px}
+.fmodal-cta{
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;
+}
+
+/* === PROVENANCE VERIFIER === */
+.verifier{
+  margin-top:28px;padding:24px;background:var(--bg);
+  border:1px solid var(--line);
+}
+.verifier-head{
+  font-family:var(--mono);font-size:11px;letter-spacing:0.15em;
+  color:var(--accent);text-transform:uppercase;margin-bottom:6px;
+}
+.verifier-head::before{content:'◆ ';color:var(--gold)}
+.verifier-desc{
+  color:var(--ink2);font-size:13px;line-height:1.6;margin-bottom:14px;
+}
+.verifier textarea{
+  width:100%;min-height:90px;padding:12px;
+  background:var(--bg2);border:1px solid var(--line2);color:var(--ink);
+  font-family:var(--mono);font-size:11px;line-height:1.5;
+  resize:vertical;outline:none;
+}
+.verifier textarea:focus{border-color:var(--accent2)}
+.verifier-row{
+  display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;align-items:center;
+}
+.verifier .btn{padding:10px 18px;font-size:11px}
+.verifier-result{
+  font-family:var(--mono);font-size:12px;padding:10px 14px;
+  border:1px solid var(--line2);color:var(--ink2);
+  flex:1;min-width:200px;word-break:break-all;line-height:1.4;
+}
+.verifier-result.ok{color:var(--accent);border-color:var(--accent)}
+.verifier-result.bad{color:#ff7070;border-color:#ff7070}
+.verifier-result.busy{color:var(--accent2);border-color:var(--accent2)}
+.verifier-snip{
+  margin-top:14px;padding:12px 14px;background:var(--bg2);
+  border:1px solid var(--line);font-family:var(--mono);
+  font-size:11px;color:var(--ink2);line-height:1.6;
+  white-space:pre;overflow-x:auto;
+}
+.verifier-snip b{color:var(--accent2);font-weight:500}
 
 /* === FLOATING MATH BG === */
 .math-bg{
@@ -484,6 +696,99 @@ section{padding:80px 32px;max-width:1280px;margin:0 auto;position:relative;z-ind
 .prov-val a{color:var(--accent);text-decoration:none;border-bottom:1px dashed var(--accent)}
 .prov-val a:hover{color:#bfff80}
 
+/* === KIND PRIMER === */
+.primer-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:10px;
+  margin-top:32px;margin-bottom:8px;
+}
+.primer-card{
+  background:var(--panel);border:1px solid var(--line);
+  padding:18px 16px 16px;
+  display:flex;flex-direction:column;gap:8px;
+  transition:border-color .2s, transform .2s;
+  position:relative;
+}
+.primer-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.primer-glyph{
+  font-family:var(--mono);font-size:22px;color:var(--accent2);
+  line-height:1;letter-spacing:-0.02em;
+  font-variant-numeric:tabular-nums;
+}
+.primer-name{
+  font-family:var(--mono);font-size:11px;letter-spacing:0.15em;
+  color:var(--ink);text-transform:uppercase;font-weight:500;
+}
+.primer-text{
+  font-size:12px;color:var(--ink2);line-height:1.55;
+}
+.primer-count{
+  font-family:var(--mono);font-size:9px;letter-spacing:0.15em;
+  color:var(--ink3);text-transform:uppercase;margin-top:auto;padding-top:4px;
+}
+
+/* === TIMELINE === */
+.timeline-wrap{
+  margin-top:36px;
+  background:var(--panel);border:1px solid var(--line);
+  padding:24px 0 28px;
+  position:relative;overflow:hidden;
+}
+.timeline-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:0 28px;margin-bottom:20px;
+  font-family:var(--mono);font-size:10px;letter-spacing:0.15em;
+  color:var(--ink3);text-transform:uppercase;
+}
+.timeline-head .tl-span{color:var(--accent2)}
+.timeline-scroll{
+  overflow-x:auto;overflow-y:hidden;
+  padding:36px 28px 24px;
+  scrollbar-color:var(--line2) transparent;
+}
+.timeline-scroll::-webkit-scrollbar{height:8px}
+.timeline-scroll::-webkit-scrollbar-track{background:transparent}
+.timeline-scroll::-webkit-scrollbar-thumb{background:var(--line2);border-radius:0}
+.timeline-track{
+  position:relative;height:120px;min-width:1100px;
+}
+.timeline-line{
+  position:absolute;left:0;right:0;top:50%;
+  height:1px;background:linear-gradient(90deg,transparent,var(--line2) 4%,var(--line2) 96%,transparent);
+}
+.timeline-era{
+  position:absolute;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:9px;letter-spacing:0.18em;
+  color:var(--ink3);text-transform:uppercase;
+  background:var(--panel);padding:2px 8px;
+}
+.tl-node{
+  position:absolute;top:50%;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;width:auto;
+}
+.tl-dot{
+  width:11px;height:11px;border-radius:50%;
+  background:var(--bg);border:1.5px solid var(--accent);
+  transition:all .2s;
+  box-shadow:0 0 0 3px var(--bg);
+}
+.tl-node:hover .tl-dot{transform:scale(1.4);background:var(--accent);box-shadow:0 0 0 4px rgba(168,255,96,0.15)}
+.tl-label{
+  position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:10px;color:var(--ink2);
+  letter-spacing:0.08em;white-space:nowrap;
+  background:var(--panel);padding:2px 6px;
+  border:1px solid var(--line);
+}
+.tl-year{
+  position:absolute;top:18px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:9px;color:var(--ink3);
+  letter-spacing:0.1em;white-space:nowrap;
+}
+.tl-node:hover .tl-label{color:var(--accent);border-color:var(--accent)}
+.tl-node.alt .tl-label{bottom:auto;top:18px}
+.tl-node.alt .tl-year{top:auto;bottom:18px}
+
 /* === AMBIENT GRAIN === */
 body::after{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
@@ -574,6 +879,10 @@ footer a:hover{color:var(--accent)}
   .modal-body{padding:24px 22px}
   .modal h2{font-size:22px}
   .modal-traits{grid-template-columns:1fr 1fr;gap:10px}
+  .modal-nav{width:36px;height:48px;font-size:22px}
+  .modal-nav-prev{left:8px;top:auto;bottom:8px;transform:none}
+  .modal-nav-next{right:8px;top:auto;bottom:8px;transform:none}
+  .modal-hint{font-size:8px;gap:6px}
   .grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
   .filters{flex-direction:column;align-items:stretch;padding:14px;gap:14px}
   .filter-group{width:100%;margin-left:0 !important}
@@ -607,6 +916,27 @@ footer a:hover{color:var(--accent)}
   .faq-q{padding:14px 16px;font-size:14px;flex-wrap:wrap}
   .faq-q .faq-tag{font-size:8px;padding:2px 6px}
   .faq-a{padding:0 16px 18px 16px;font-size:13px}
+  .const-strip{grid-template-columns:repeat(4,1fr)}
+  .fmodal-head{padding:24px 22px 20px}
+  .fmodal-name{font-size:22px}
+  .fmodal-body{padding:22px}
+  .fmodal-eq{font-size:12px;padding:10px 12px}
+  .fmodal-variants{grid-template-columns:repeat(4,1fr)}
+  .fmodal-stats{grid-template-columns:repeat(3,1fr);gap:6px}
+  .fmodal-stats .fst{padding:10px 10px}
+  .fmodal-stats .fst-v{font-size:15px}
+  .verifier{padding:18px}
+  .verifier-row{flex-direction:column;align-items:stretch}
+  .verifier-result{min-width:0}
+  .primer-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .primer-card{padding:14px 14px 12px}
+  .primer-glyph{font-size:18px}
+  .timeline-wrap{margin-top:28px}
+  .timeline-head{padding:0 18px;flex-wrap:wrap;gap:6px}
+  .timeline-scroll{padding:36px 18px 24px}
+  .timeline-track{min-width:1400px}
+  .tl-label{font-size:9px;padding:2px 5px}
+  .tl-year{font-size:8px}
 }
 @media (max-width:480px){
   .hero-left h1{font-size:30px}
@@ -618,7 +948,15 @@ footer a:hover{color:var(--accent)}
 }
 </style>
 </head>
-<body>
+<body class="loading">
+
+<div class="splash" id="splash" aria-hidden="true">
+  <div class="splash-mark">Constants · Genesis 333</div>
+  <div class="splash-eq">e<sup>iπ</sup> + 1 = <span class="accent">0</span></div>
+  <div class="splash-sub">rendering 333 deterministic constants</div>
+  <div class="splash-bar"></div>
+  <div class="splash-status" id="splashStatus">parsing the universe · <b>0%</b></div>
+</div>
 
 <nav>
   <div class="brand">CONSTANTS<b>·</b>NFT</div>
@@ -671,7 +1009,22 @@ footer a:hover{color:var(--accent)}
     <div class="section-tag">The Index · 21 Constants</div>
     <h2 class="section-title">Twenty-one equations.<br><span style="color:var(--accent);font-style:italic;font-weight:300">Each one renders different.</span></h2>
     <p class="section-desc">Every card in the collection is generated from one of these constants. Same equation, infinite parameter space — palette, rotation, density, zoom, all randomized per token. Math made visible.</p>
+
+    <div class="primer-grid" id="primerGrid"></div>
+
     <div class="constants-grid" id="constantsGrid"></div>
+
+    <div class="timeline-wrap">
+      <div class="timeline-head">
+        <span>Timeline · 21 constants across <span class="tl-span">2,517 years</span></span>
+        <span>← scroll →</span>
+      </div>
+      <div class="timeline-scroll" id="timelineScroll">
+        <div class="timeline-track" id="timelineTrack">
+          <div class="timeline-line"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -782,6 +1135,22 @@ footer a:hover{color:var(--accent)}
       <div class="prov-key">Metadata</div>
       <div class="prov-val pending">ipfs://… · pinned at launch</div>
     </div>
+  </div>
+
+  <div class="verifier">
+    <div class="verifier-head">Verify it yourself</div>
+    <p class="verifier-desc">Paste a JSON array of all 333 signatures (or any subset, in token-id order) and we'll hash them in your browser. No server. Just <code style="font-family:var(--mono);color:var(--accent2)">sha256(sig₁ ‖ sig₂ ‖ …)</code>.</p>
+    <textarea id="verifierInput" placeholder='[ "sig_token_1", "sig_token_2", ... ]' spellcheck="false"></textarea>
+    <div class="verifier-row">
+      <button class="btn btn-primary" id="verifierBtn">Compute hash</button>
+      <button class="btn btn-ghost" id="verifierLoad">Load all 333</button>
+      <div class="verifier-result" id="verifierResult">awaiting input · sha256 computed in-browser</div>
+    </div>
+    <div class="verifier-snip"><b># python verification:</b>
+import json, hashlib
+sigs = json.load(open('signatures.json'))
+print(hashlib.sha256(''.join(sigs).encode()).hexdigest())
+<b># expected:</b> __PROVENANCE_HASH__</div>
   </div>
 </section>
 
@@ -944,7 +1313,7 @@ footer a:hover{color:var(--accent)}
     <details class="faq-item">
       <summary class="faq-q"><span class="faq-tag">10 · Trust</span><span class="faq-text">Who's behind Constants?</span></summary>
       <div class="faq-a">
-        <p>Built and signed by <code>Loxee.eth</code> — solo. The contract is verified on Etherscan at deploy. The provenance hash on this page lets anyone independently verify that the metadata wasn't reordered after launch.</p>
+        <p>The contract is verified on Etherscan at deploy. The provenance hash on this page lets anyone independently verify that the metadata wasn't reordered after launch — no team, no privileged keys can swap the renders after the fact.</p>
         <p>No DAO, no team token, no roadmap dependency on a third party. Just one set of math, one drop, signed.</p>
       </div>
     </details>
@@ -988,6 +1357,8 @@ footer a:hover{color:var(--accent)}
 <div class="modal-bg" id="modalBg">
   <div class="modal" id="modal">
     <button class="modal-close" id="modalClose">×</button>
+    <button class="modal-nav modal-nav-prev" id="modalPrev" aria-label="Previous card">‹</button>
+    <button class="modal-nav modal-nav-next" id="modalNext" aria-label="Next card">›</button>
     <div class="modal-img"><img id="modalImg" alt=""></div>
     <div class="modal-body">
       <div class="modal-tag" id="modalTag">FORMULA · ####</div>
@@ -995,12 +1366,88 @@ footer a:hover{color:var(--accent)}
       <p class="modal-sub" id="modalDesc">—</p>
       <div class="modal-traits" id="modalTraits"></div>
       <div class="modal-sig" id="modalSig"></div>
+      <div class="modal-hint">← → navigate · esc to close</div>
+    </div>
+  </div>
+</div>
+
+<div class="fmodal-bg" id="fmodalBg">
+  <div class="fmodal" id="fmodal">
+    <button class="fmodal-close" id="fmodalClose" aria-label="Close">×</button>
+    <div class="fmodal-head">
+      <div class="fmodal-tag" id="fmodalTag">CONSTANT · ####</div>
+      <h2 class="fmodal-name" id="fmodalName">—</h2>
+      <div class="fmodal-eq" id="fmodalEq">—</div>
+      <div class="fmodal-meta" id="fmodalMeta"></div>
+    </div>
+    <div class="fmodal-body">
+      <div class="fmodal-section">
+        <div class="fmodal-h">What it is</div>
+        <p class="fmodal-text" id="fmodalLore">—</p>
+      </div>
+      <div class="fmodal-section">
+        <div class="fmodal-h">Why it matters</div>
+        <p class="fmodal-text" id="fmodalWhy">—</p>
+      </div>
+      <div class="fmodal-section">
+        <div class="fmodal-h">Cards rendered</div>
+        <div class="fmodal-stats" id="fmodalStats"></div>
+      </div>
+      <div class="fmodal-section">
+        <div class="fmodal-h">Sample variants — same equation, different parameters</div>
+        <div class="fmodal-variants" id="fmodalVariants"></div>
+      </div>
+      <div class="fmodal-section">
+        <div class="fmodal-cta">
+          <button class="btn btn-primary" id="fmodalGoGallery">View all in gallery →</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
 const ITEMS = __ITEMS_JSON__;
+
+// === Splash bootstrap ===
+(function splashBoot(){
+  const splash = document.getElementById('splash');
+  const status = document.getElementById('splashStatus');
+  if (!splash) return;
+  const stages = [
+    'parsing the universe',
+    'computing 333 signatures',
+    'verifying provenance',
+    'almost there',
+  ];
+  const start = performance.now();
+  const minDuration = 1100; // ms — keep splash visible long enough to read
+  let pct = 0;
+  const tick = setInterval(()=>{
+    pct = Math.min(99, pct + Math.random()*9 + 3);
+    const stage = stages[Math.min(stages.length-1, Math.floor(pct/25))];
+    if (status) status.innerHTML = `${stage} · <b>${Math.floor(pct)}%</b>`;
+  }, 90);
+  function dismiss(){
+    clearInterval(tick);
+    if (status) status.innerHTML = 'rendering complete · <b>100%</b>';
+    splash.classList.add('gone');
+    document.body.classList.remove('loading');
+    setTimeout(()=>splash.remove(), 600);
+  }
+  function ready(){
+    const elapsed = performance.now() - start;
+    const wait = Math.max(0, minDuration - elapsed);
+    setTimeout(dismiss, wait);
+  }
+  if (document.readyState === 'complete' || document.readyState === 'interactive'){
+    requestAnimationFrame(ready);
+  } else {
+    window.addEventListener('DOMContentLoaded', ()=>requestAnimationFrame(ready));
+  }
+  // Hard fallback — never trap user
+  setTimeout(dismiss, 6000);
+})();
 
 // === Build filter chips ===
 const formulas = [...new Set(ITEMS.map(i=>i.code))].sort();
@@ -1092,7 +1539,9 @@ loadMore.addEventListener('click',()=>{
 // === Modal ===
 const modalBg=document.getElementById('modalBg');
 const modalClose=document.getElementById('modalClose');
+let currentItem = null;
 function openModal(it){
+  currentItem = it;
   document.getElementById('modalImg').src=`data:image/jpeg;base64,${it.img}`;
   document.getElementById('modalName').textContent=`${it.formula} · #${String(it.id).padStart(4,'0')}`;
   document.getElementById('modalTag').textContent=`${it.code} · ${it.palette.toUpperCase()}`;
@@ -1110,10 +1559,31 @@ function openModal(it){
 function closeModal(){
   modalBg.classList.remove('open');
   document.body.style.overflow='';
+  currentItem = null;
+}
+function navModal(dir){
+  if (!currentItem) return;
+  const filtered = filter();
+  if (!filtered.length) return;
+  const idx = filtered.findIndex(it=>it.id===currentItem.id);
+  if (idx < 0){
+    // Current item not in current filter — open first match instead
+    openModal(filtered[0]);
+    return;
+  }
+  const next = filtered[(idx + dir + filtered.length) % filtered.length];
+  openModal(next);
 }
 modalClose.addEventListener('click',closeModal);
+document.getElementById('modalPrev').addEventListener('click',e=>{e.stopPropagation();navModal(-1)});
+document.getElementById('modalNext').addEventListener('click',e=>{e.stopPropagation();navModal(+1)});
 modalBg.addEventListener('click',e=>{if(e.target===modalBg) closeModal()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape') closeModal()});
+document.addEventListener('keydown',e=>{
+  if (!modalBg.classList.contains('open')) return;
+  if (e.key==='Escape'){ closeModal(); return; }
+  if (e.key==='ArrowRight'){ e.preventDefault(); navModal(+1); }
+  else if (e.key==='ArrowLeft'){ e.preventDefault(); navModal(-1); }
+});
 
 // === Hero featured card === (random pick that's not super spoilery — just shows it's a card)
 const featImg=ITEMS[Math.floor(Math.random()*ITEMS.length)].img;
@@ -1126,51 +1596,324 @@ render();
 
 // === Constants Index ===
 const CONSTANTS_INDEX = [
-  {code:'SIER', name:'Sierpinski Triangle',     eq:'(x,y) → midpoint to one of 3 vertices', who:'W. Sierpinski',     yr:1915, kind:'fractal'},
-  {code:'LRNZ', name:'Lorenz Attractor',        eq:'dx/dt = σ(y−x), dy/dt = x(ρ−z)−y, dz/dt = xy−βz', who:'E. Lorenz', yr:1963, kind:'chaos'},
-  {code:'CLIF', name:'Clifford Attractor',      eq:'xₙ₊₁ = sin(a·yₙ) + c·cos(a·xₙ)',         who:'C. Pickover',     yr:1989, kind:'attractor'},
-  {code:'MAND', name:'Mandelbrot Set',          eq:'zₙ₊₁ = zₙ² + c',                          who:'B. Mandelbrot',   yr:1980, kind:'fractal'},
-  {code:'JULA', name:'Julia Set',               eq:'zₙ₊₁ = zₙ² + c (fixed c)',                who:'G. Julia',        yr:1918, kind:'fractal'},
-  {code:'EULR', name:"Euler's Identity",        eq:'eⁱᵖⁱ + 1 = 0',                            who:'L. Euler',        yr:1748, kind:'identity'},
-  {code:'LISS', name:'Lissajous Curve',         eq:'x = A·sin(at + δ), y = B·sin(bt)',        who:'J. Lissajous',    yr:1857, kind:'curve'},
-  {code:'FERN', name:'Barnsley Fern',           eq:'IFS · 4 affine transforms',               who:'M. Barnsley',     yr:1988, kind:'fractal'},
-  {code:'HART', name:'Heart Curve',             eq:'r = 1 − sin(θ)',                          who:'classical',       yr:1741, kind:'curve'},
-  {code:'NAVI', name:'Navier-Stokes',           eq:'∂v/∂t + (v·∇)v = −∇p/ρ + ν∇²v + f',       who:'C-L. Navier',     yr:1822, kind:'physics'},
-  {code:'FIBO', name:'Fibonacci Spiral',        eq:'Fₙ = Fₙ₋₁ + Fₙ₋₂',                        who:'Leonardo of Pisa', yr:1202, kind:'sequence'},
-  {code:'WAVE', name:'Wave Equation',           eq:'∂²u/∂t² = c²·∇²u',                        who:"d'Alembert",      yr:1747, kind:'physics'},
-  {code:'PYTH', name:'Pythagorean Theorem',     eq:'a² + b² = c²',                            who:'Pythagoras',      yr:-530, kind:'theorem'},
-  {code:'SPIR', name:'Spirograph',              eq:'x = (R−r)cos(t) + d·cos((R−r)t/r)',       who:'D. Cohen',        yr:1965, kind:'curve'},
-  {code:'GAUS', name:'Gaussian Distribution',   eq:'f(x) = e^(−(x−μ)²/2σ²) / σ√(2π)',         who:'C.F. Gauss',      yr:1809, kind:'statistics'},
-  {code:'LGST', name:'Logistic Map',            eq:'xₙ₊₁ = r·xₙ(1−xₙ)',                       who:'P. Verhulst',     yr:1838, kind:'chaos'},
-  {code:'FOUR', name:'Fourier Series',          eq:'f(x) = Σ aₙ·cos(nx) + bₙ·sin(nx)',        who:'J. Fourier',      yr:1807, kind:'series'},
-  {code:'ROSE', name:'Rose Curve',              eq:'r = a·cos(kθ)',                           who:'G. Grandi',       yr:1728, kind:'curve'},
-  {code:'SCHR', name:'Schrödinger Equation',    eq:'iℏ·∂ψ/∂t = Ĥψ',                           who:'E. Schrödinger',  yr:1926, kind:'physics'},
-  {code:'KOCH', name:'Koch Snowflake',          eq:'L = 3·(4/3)ⁿ',                            who:'H. von Koch',     yr:1904, kind:'fractal'},
-  {code:'GRAV', name:"Newton's Gravitation",    eq:'F = G·m₁m₂/r²',                           who:'I. Newton',       yr:1687, kind:'physics'},
+  {code:'SIER', name:'Sierpinski Triangle',     eq:'(x,y) → midpoint to one of 3 vertices', who:'W. Sierpinski',     yr:1915, kind:'fractal',
+   lore:"A triangle made by jumping halfway to a random vertex, over and over. Three rules, infinite detail. The chaos game's first proof that randomness can build perfect order.",
+   why:"Showed mathematicians that simple iterative rules can carve self-similar structure out of pure noise — a foundational moment in fractal geometry."},
+  {code:'LRNZ', name:'Lorenz Attractor',        eq:'dx/dt = σ(y−x), dy/dt = x(ρ−z)−y, dz/dt = xy−βz', who:'E. Lorenz', yr:1963, kind:'chaos',
+   lore:"A weather model that bent into butterfly wings. Three coupled ODEs that never repeat, never escape, never settle — bounded but eternally restless.",
+   why:"The image of chaos itself. Lorenz proved deterministic systems can be unpredictable, and the butterfly effect entered every scientific vocabulary on Earth."},
+  {code:'CLIF', name:'Clifford Attractor',      eq:'xₙ₊₁ = sin(a·yₙ) + c·cos(a·xₙ)',         who:'C. Pickover',     yr:1989, kind:'attractor',
+   lore:"A four-parameter strange attractor by Cliff Pickover — short loop, long memory. Every parameter shift redraws the universe.",
+   why:"A staple of generative art. Tiny coefficient nudges flip topology entirely, making it the perfect canvas for parametric exploration."},
+  {code:'MAND', name:'Mandelbrot Set',          eq:'zₙ₊₁ = zₙ² + c',                          who:'B. Mandelbrot',   yr:1980, kind:'fractal',
+   lore:"The complex-plane test: pick a point c, iterate z² + c, ask if it stays bounded. The boundary between yes and no is infinite, jagged, alive.",
+   why:"The most photographed equation in mathematics. Proved fractals weren't a curiosity — they're how nature actually draws coastlines, lungs, and lightning."},
+  {code:'JULA', name:'Julia Set',               eq:'zₙ₊₁ = zₙ² + c (fixed c)',                who:'G. Julia',        yr:1918, kind:'fractal',
+   lore:"Same iteration as Mandelbrot, but c is locked and z₀ varies. Each c value is its own universe — connected, dust, dendrite, spiral.",
+   why:"Predates Mandelbrot by 60 years. The Julia set is the parameter slice that taught us a single number can encode an entire fractal continent."},
+  {code:'EULR', name:"Euler's Identity",        eq:'eⁱᵖⁱ + 1 = 0',                            who:'L. Euler',        yr:1748, kind:'identity',
+   lore:"Five fundamental constants in one statement. e, i, π, 1, and 0 — multiplication, exponentiation, addition, identity, nothing — all bound by a single equality.",
+   why:"Routinely voted the most beautiful equation ever written. It's not a tool, it's a proof that the universe's constants know each other intimately."},
+  {code:'LISS', name:'Lissajous Curve',         eq:'x = A·sin(at + δ), y = B·sin(bt)',        who:'J. Lissajous',    yr:1857, kind:'curve',
+   lore:"Two perpendicular sine waves, woven by a frequency ratio. Rational ratios close the loop. Irrational ratios trace forever without repeating.",
+   why:"The first instrument for visualizing audio frequency. Every oscilloscope still draws Lissajous figures when fed a tone."},
+  {code:'FERN', name:'Barnsley Fern',           eq:'IFS · 4 affine transforms',               who:'M. Barnsley',     yr:1988, kind:'fractal',
+   lore:"Four affine transformations, applied probabilistically. From four rules and a dice roll, a fern leaf emerges — stem, fronds, every detail.",
+   why:"Proved that biological complexity can be compressed into 24 numbers. The IFS theorem became the basis for fractal image compression."},
+  {code:'HART', name:'Heart Curve',             eq:'r = 1 − sin(θ)',                          who:'classical',       yr:1741, kind:'curve',
+   lore:"A polar cardioid. Plot r against θ in standard form, get a heart. The math knew before the emoji did.",
+   why:"The cardioid appears in epicycloids, in microphone pickup patterns, in the central bulb of the Mandelbrot set. Same shape, different physics."},
+  {code:'NAVI', name:'Navier-Stokes',           eq:'∂v/∂t + (v·∇)v = −∇p/ρ + ν∇²v + f',       who:'C-L. Navier',     yr:1822, kind:'physics',
+   lore:"The equation that governs every flowing fluid — air around a wing, blood in an artery, ocean currents around a continent.",
+   why:"One of the seven Millennium Prize problems. Whether smooth solutions always exist in 3D is unproven; a million-dollar question for 200 years and counting."},
+  {code:'FIBO', name:'Fibonacci Spiral',        eq:'Fₙ = Fₙ₋₁ + Fₙ₋₂',                        who:'Leonardo of Pisa', yr:1202, kind:'sequence',
+   lore:"Each term is the sum of the previous two. Squares with Fibonacci side lengths tile a golden spiral. The ratio Fₙ/Fₙ₋₁ converges to φ.",
+   why:"Found in sunflower seeds, pinecone spirals, nautilus shells, hurricane arms. Nature's preferred packing strategy, written in a 13th-century rabbit puzzle."},
+  {code:'WAVE', name:'Wave Equation',           eq:'∂²u/∂t² = c²·∇²u',                        who:"d'Alembert",      yr:1747, kind:'physics',
+   lore:"A second-order PDE that describes anything propagating at speed c — sound, light, water ripples, vibrating strings, gravitational waves.",
+   why:"Solving the wave equation taught humanity Fourier analysis, and through it, every signal-processing technique we have today."},
+  {code:'PYTH', name:'Pythagorean Theorem',     eq:'a² + b² = c²',                            who:'Pythagoras',      yr:-530, kind:'theorem',
+   lore:"In any right triangle, the square on the hypotenuse equals the sum of the squares on the other two sides. 2,500 years old. Still true.",
+   why:"The first formula most humans ever learn. It seeded geometry, irrational numbers, and the Euclidean distance metric used everywhere from GPS to ML."},
+  {code:'SPIR', name:'Spirograph',              eq:'x = (R−r)cos(t) + d·cos((R−r)t/r)',       who:'D. Cohen',        yr:1965, kind:'curve',
+   lore:"A point on a small circle rolling inside a larger one — hypotrochoid. Tweak the radii and you tile the plane with rosettes, stars, knots.",
+   why:"The toy taught a generation what parametric curves felt like. Same math powers gear design, planetary orbits, and the engine of every wankel rotary."},
+  {code:'GAUS', name:'Gaussian Distribution',   eq:'f(x) = e^(−(x−μ)²/2σ²) / σ√(2π)',         who:'C.F. Gauss',      yr:1809, kind:'statistics',
+   lore:"The bell curve. The shape that errors fall into when you average enough independent measurements. The Central Limit Theorem made tangible.",
+   why:"Underpins statistics, signal processing, machine learning, finance, and quantum mechanics. The normal distribution is anything but normal — it's foundational."},
+  {code:'LGST', name:'Logistic Map',            eq:'xₙ₊₁ = r·xₙ(1−xₙ)',                       who:'P. Verhulst',     yr:1838, kind:'chaos',
+   lore:"A toy population model. Sweep the parameter r from 0 to 4 and watch fixed points split into 2-cycles, 4-cycles, then chaos — the famous bifurcation diagram.",
+   why:"The simplest equation that exhibits the route to chaos via period doubling. Feigenbaum constants emerged here; chaos theory grew up around it."},
+  {code:'FOUR', name:'Fourier Series',          eq:'f(x) = Σ aₙ·cos(nx) + bₙ·sin(nx)',        who:'J. Fourier',      yr:1807, kind:'series',
+   lore:"Any periodic function can be written as a sum of sines and cosines. Decomposing complexity into pure tones — that's the entire idea.",
+   why:"Powers MP3, JPEG, MRI, radar, voice recognition, and quantum mechanics. Every modern signal we encode passes through Fourier's lens."},
+  {code:'ROSE', name:'Rose Curve',              eq:'r = a·cos(kθ)',                           who:'G. Grandi',       yr:1728, kind:'curve',
+   lore:"A polar plot that draws petals. Integer k gives k petals (odd) or 2k petals (even). Rational k gives exotic stars. Irrational k never closes.",
+   why:"A textbook case of how a single integer can completely change a curve's symmetry. Antenna engineers still use rose patterns to model directional gain."},
+  {code:'SCHR', name:'Schrödinger Equation',    eq:'iℏ·∂ψ/∂t = Ĥψ',                           who:'E. Schrödinger',  yr:1926, kind:'physics',
+   lore:"The wave function ψ evolves under the Hamiltonian operator. Linear, complex, deterministic — until you measure, and probability collapses out of it.",
+   why:"The cornerstone of quantum mechanics. Every transistor on Earth — every phone, every GPU — works because someone solved this equation in the 1940s."},
+  {code:'KOCH', name:'Koch Snowflake',          eq:'L = 3·(4/3)ⁿ',                            who:'H. von Koch',     yr:1904, kind:'fractal',
+   lore:"Take a triangle. Replace the middle third of every edge with two edges of a smaller triangle. Repeat. The perimeter grows without bound while the area stays finite.",
+   why:"The first published fractal with infinite length and finite area. It broke 19th-century intuitions about what 'length' even meant."},
+  {code:'GRAV', name:"Newton's Gravitation",    eq:'F = G·m₁m₂/r²',                           who:'I. Newton',       yr:1687, kind:'physics',
+   lore:"Two masses, a distance, and a constant. Apples fall, moons orbit, galaxies cluster — all from one inverse-square law that holds across 40 orders of magnitude.",
+   why:"The first universal law. Newton's gravity was the prototype for every physical theory that followed, including the one Einstein wrote to replace it."},
 ];
+
+// Build per-formula lookup of cards for variant strips
+const ITEMS_BY_CODE = {};
+ITEMS.forEach(it=>{
+  if(!ITEMS_BY_CODE[it.code]) ITEMS_BY_CODE[it.code]=[];
+  ITEMS_BY_CODE[it.code].push(it);
+});
 
 const cgrid = document.getElementById('constantsGrid');
 CONSTANTS_INDEX.forEach(c=>{
   const el = document.createElement('div');
   el.className = 'const-card';
   el.dataset.code = c.code;
+  const pool = ITEMS_BY_CODE[c.code] || [];
+  // Pick 4 deterministic samples (palette diversity if possible)
+  const samples = [];
+  const seenP = new Set();
+  for (const it of pool){
+    if (samples.length>=4) break;
+    if (!seenP.has(it.palette)){ seenP.add(it.palette); samples.push(it); }
+  }
+  while (samples.length<4 && samples.length<pool.length) samples.push(pool[samples.length]);
+  const stripHtml = samples.length
+    ? '<div class="const-strip">'+samples.map(s=>`<img src="data:image/jpeg;base64,${s.img}" alt="${c.code} variant" loading="lazy">`).join('')+'</div>'
+    : '';
   el.innerHTML = `
     <div class="const-name">${c.name}</div>
     <div class="const-eq">${c.eq}</div>
-    <div class="const-meta">${c.who} · ${c.yr < 0 ? Math.abs(c.yr)+' BCE' : c.yr} · ${c.kind}</div>
+    ${stripHtml}
+    <div class="const-meta">
+      <span>${c.who} · ${c.yr < 0 ? Math.abs(c.yr)+' BCE' : c.yr} · ${c.kind}</span>
+      <span class="const-cta">read →</span>
+    </div>
   `;
-  el.addEventListener('click',()=>{
-    // Filter gallery by this code
-    state.formula = c.code;
-    state.shown = PAGE;
-    fGroup.querySelectorAll('.chip').forEach(ch=>{
-      ch.classList.toggle('active', ch.dataset.f === c.code);
-    });
-    render();
-    document.getElementById('gallery').scrollIntoView({behavior:'smooth'});
-  });
+  el.addEventListener('click',()=>openFormulaModal(c));
   cgrid.appendChild(el);
 });
+
+// === Formula Deep-Dive Modal ===
+const fmodalBg   = document.getElementById('fmodalBg');
+const fmodalTag  = document.getElementById('fmodalTag');
+const fmodalName = document.getElementById('fmodalName');
+const fmodalEq   = document.getElementById('fmodalEq');
+const fmodalMeta = document.getElementById('fmodalMeta');
+const fmodalLore = document.getElementById('fmodalLore');
+const fmodalWhy  = document.getElementById('fmodalWhy');
+const fmodalStats= document.getElementById('fmodalStats');
+const fmodalVars = document.getElementById('fmodalVariants');
+const fmodalGo   = document.getElementById('fmodalGoGallery');
+let fmodalCurrentCode = null;
+
+function openFormulaModal(c){
+  fmodalCurrentCode = c.code;
+  fmodalTag.textContent = `CONSTANT · ${c.code}`;
+  fmodalName.textContent = c.name;
+  fmodalEq.textContent = c.eq;
+  fmodalMeta.innerHTML = `
+    <span>${c.who}</span>
+    <span>${c.yr < 0 ? Math.abs(c.yr)+' BCE' : c.yr+' CE'}</span>
+    <span>${c.kind}</span>
+  `;
+  fmodalLore.textContent = c.lore;
+  fmodalWhy.textContent  = c.why;
+
+  const pool = ITEMS_BY_CODE[c.code] || [];
+  const palettes = new Set(pool.map(p=>p.palette));
+  fmodalStats.innerHTML = `
+    <div class="fst"><div class="fst-v">${pool.length}</div><div class="fst-l">cards</div></div>
+    <div class="fst"><div class="fst-v">${palettes.size}</div><div class="fst-l">palettes</div></div>
+    <div class="fst"><div class="fst-v">${c.code}</div><div class="fst-l">code</div></div>
+  `;
+
+  // Build variant grid: spread across palettes, up to 12
+  const byPalette = {};
+  pool.forEach(p=>{ if(!byPalette[p.palette]) byPalette[p.palette]=[]; byPalette[p.palette].push(p); });
+  const picks = [];
+  const palKeys = Object.keys(byPalette);
+  let round = 0;
+  while (picks.length < 12 && palKeys.some(k=>byPalette[k].length > round)){
+    for (const k of palKeys){
+      if (byPalette[k].length > round){
+        picks.push(byPalette[k][round]);
+        if (picks.length >= 12) break;
+      }
+    }
+    round++;
+  }
+  fmodalVars.innerHTML = picks.map(p=>
+    `<img src="data:image/jpeg;base64,${p.img}" alt="${c.code} #${p.id}" data-id="${p.id}" title="#${String(p.id).padStart(4,'0')} · ${p.palette}" loading="lazy">`
+  ).join('');
+  fmodalVars.querySelectorAll('img').forEach(img=>{
+    img.addEventListener('click',()=>{
+      const id = parseInt(img.dataset.id);
+      const it = ITEMS.find(x=>x.id===id);
+      if (it){ closeFormulaModal(); openModal(it); }
+    });
+  });
+
+  fmodalBg.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeFormulaModal(){
+  fmodalBg.classList.remove('open');
+  document.body.style.overflow='';
+  fmodalCurrentCode = null;
+}
+document.getElementById('fmodalClose').addEventListener('click',closeFormulaModal);
+fmodalBg.addEventListener('click',e=>{ if(e.target===fmodalBg) closeFormulaModal(); });
+fmodalGo.addEventListener('click',()=>{
+  if (!fmodalCurrentCode) return;
+  state.formula = fmodalCurrentCode;
+  state.shown = PAGE;
+  fGroup.querySelectorAll('.chip').forEach(ch=>{
+    ch.classList.toggle('active', ch.dataset.f === fmodalCurrentCode);
+  });
+  render();
+  closeFormulaModal();
+  document.getElementById('gallery').scrollIntoView({behavior:'smooth'});
+});
+window.addEventListener('keydown',e=>{
+  if (e.key==='Escape' && fmodalBg.classList.contains('open')) closeFormulaModal();
+});
+
+// === Concept Primer (5 kinds) ===
+const PRIMER = [
+  {kind:'fractal',    glyph:'∞',  text:"Self-similar shapes that repeat detail at every scale. Zoom in, see the same structure again."},
+  {kind:'attractor',  glyph:'∮',  text:"Bounded paths that a chaotic system traces forever — never settling, never escaping."},
+  {kind:'curve',      glyph:'∿',  text:"Parametric or polar plots — sine, polar, polar-rose. Geometry written as a single line."},
+  {kind:'physics',    glyph:'∂',  text:"Equations that govern reality — gravity, fluid flow, quantum waves. The universe's running source code."},
+  {kind:'theorem',    glyph:'∑',  text:"Identities, theorems, sequences. The pure-math foundations everything else stands on."},
+];
+const KIND_MAP = {
+  fractal:'fractal', chaos:'fractal',
+  attractor:'attractor',
+  curve:'curve', sequence:'curve', series:'curve',
+  physics:'physics', identity:'physics',
+  theorem:'theorem', statistics:'theorem',
+};
+const primerCounts = {};
+CONSTANTS_INDEX.forEach(c=>{
+  const k = KIND_MAP[c.kind] || c.kind;
+  primerCounts[k] = (primerCounts[k]||0) + 1;
+});
+const pgrid = document.getElementById('primerGrid');
+PRIMER.forEach(p=>{
+  const el = document.createElement('div');
+  el.className='primer-card';
+  el.innerHTML = `
+    <div style="display:flex;align-items:baseline;gap:10px">
+      <span class="primer-glyph">${p.glyph}</span>
+      <span class="primer-name">${p.kind}</span>
+    </div>
+    <p class="primer-text">${p.text}</p>
+    <div class="primer-count">${primerCounts[p.kind]||0} constants</div>
+  `;
+  pgrid.appendChild(el);
+});
+
+// === Timeline (21 constants over time) ===
+(function timeline(){
+  const track = document.getElementById('timelineTrack');
+  const scroll = document.getElementById('timelineScroll');
+  const sorted = CONSTANTS_INDEX.slice().sort((a,b)=>a.yr-b.yr);
+  const minYr = sorted[0].yr;
+  const maxYr = sorted[sorted.length-1].yr;
+  const span = maxYr - minYr;
+
+  // Era markers (BCE / CE start / 1900)
+  const eras = [
+    {yr: minYr,  label:`${Math.abs(minYr)} BCE`, side:'left'},
+    {yr: 1,      label:'CE 1', side:'mid'},
+    {yr: 1700,   label:'1700', side:'mid'},
+    {yr: 1900,   label:'1900', side:'mid'},
+    {yr: maxYr,  label:`${maxYr}`, side:'right'},
+  ];
+
+  function pct(yr){
+    return ((yr - minYr) / span) * 100;
+  }
+
+  eras.forEach(e=>{
+    if (e.yr < minYr || e.yr > maxYr) return;
+    const el = document.createElement('div');
+    el.className='timeline-era';
+    if (e.side==='left'){ el.style.left='0'; }
+    else if (e.side==='right'){ el.style.right='0'; }
+    else { el.style.left = pct(e.yr) + '%'; el.style.transform = 'translate(-50%,-50%)'; }
+    el.textContent = e.label;
+    track.appendChild(el);
+  });
+
+  // Place nodes; alternate label position to reduce overlap
+  let lastPct = -10;
+  sorted.forEach((c,i)=>{
+    const p = pct(c.yr);
+    const node = document.createElement('div');
+    node.className = 'tl-node' + (i%2===1 ? ' alt' : '');
+    node.style.left = p + '%';
+    const yrLabel = c.yr < 0 ? Math.abs(c.yr)+' BCE' : c.yr;
+    node.innerHTML = `
+      <div class="tl-dot"></div>
+      <div class="tl-label">${c.code}</div>
+      <div class="tl-year">${yrLabel}</div>
+    `;
+    node.title = `${c.name} · ${yrLabel}`;
+    node.addEventListener('click',()=>openFormulaModal(c));
+    track.appendChild(node);
+    lastPct = p;
+  });
+})();
+
+// === Provenance verifier ===
+(function verifier(){
+  const inp = document.getElementById('verifierInput');
+  const btn = document.getElementById('verifierBtn');
+  const loadBtn = document.getElementById('verifierLoad');
+  const out = document.getElementById('verifierResult');
+  const expected = (document.querySelector('.prov-val.hash')?.textContent || '').trim();
+
+  async function sha256Hex(str){
+    const buf = new TextEncoder().encode(str);
+    const dig = await crypto.subtle.digest('SHA-256', buf);
+    return Array.from(new Uint8Array(dig)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  function setResult(cls, txt){
+    out.className = 'verifier-result ' + (cls||'');
+    out.textContent = txt;
+  }
+  btn.addEventListener('click', async ()=>{
+    const raw = inp.value.trim();
+    if (!raw){ setResult('bad', 'paste a JSON array of signatures first'); return; }
+    let arr;
+    try { arr = JSON.parse(raw); } catch(e){ setResult('bad', 'not valid JSON: '+e.message); return; }
+    if (!Array.isArray(arr) || !arr.every(x=>typeof x==='string')){
+      setResult('bad', 'expected a JSON array of strings'); return;
+    }
+    setResult('busy', `hashing ${arr.length} signatures…`);
+    try {
+      const hash = await sha256Hex(arr.join(''));
+      if (arr.length===333 && expected && hash.toLowerCase()===expected.toLowerCase()){
+        setResult('ok', `✓ MATCH · ${hash}`);
+      } else if (arr.length===333){
+        setResult('bad', `✗ MISMATCH · got ${hash}`);
+      } else {
+        setResult('busy', `(${arr.length}/333) sha256 = ${hash}`);
+      }
+    } catch(e){ setResult('bad', 'hashing failed: '+e.message); }
+  });
+  loadBtn.addEventListener('click',()=>{
+    const sigs = ITEMS.slice().sort((a,b)=>a.id-b.id).map(it=>it.sig);
+    inp.value = JSON.stringify(sigs);
+    setResult('busy', `loaded ${sigs.length} signatures from gallery · click Compute hash`);
+  });
+})();
 
 // === Floating math background ===
 (function mathBg(){
@@ -1243,6 +1986,101 @@ const CONSTANTS_LAUNCH = null; // e.g. '2026-06-21T18:00:00Z'
   }
   tick();
   setInterval(tick, 1000);
+})();
+
+// === Console signature + easter eggs ===
+(function easter(){
+  const ascii = `
+   ╱╱  CONSTANTS · GENESIS 333
+   ╱╱  ──────────────────────────
+   ╱╱  e^(iπ) + 1 = 0
+   ╱╱  21 formulas · 10 palettes · 5 tiers
+   ╱╱  signed · anonymous
+   ╱╱  https://x.com/ConstantsNft
+`;
+  try {
+    console.log('%c'+ascii,
+      'color:#a8ff60;font-family:monospace;font-size:11px;line-height:1.4');
+    console.log('%cwhisper a constant to summon it · try: pi · phi · e · lorenz · mandelbrot · fibonacci',
+      'color:#60d4ff;font-family:monospace;font-size:10px;font-style:italic');
+  } catch(e){}
+
+  // Keystroke easter egg: type a keyword anywhere on the page
+  const SUMMONS = {
+    'pi':         ['EULR'],
+    'phi':        ['FIBO'],
+    'e':          ['EULR'],
+    'lorenz':     ['LRNZ'],
+    'butterfly':  ['LRNZ'],
+    'mandelbrot': ['MAND'],
+    'julia':      ['JULA'],
+    'fibonacci':  ['FIBO'],
+    'golden':     ['FIBO'],
+    'sierpinski': ['SIER'],
+    'fern':       ['FERN'],
+    'newton':     ['GRAV'],
+    'gravity':    ['GRAV'],
+    'wave':       ['WAVE'],
+    'fourier':    ['FOUR'],
+    'rose':       ['ROSE'],
+    'koch':       ['KOCH'],
+    'snow':       ['KOCH'],
+    'quantum':    ['SCHR'],
+    'schrodinger':['SCHR'],
+    'gauss':      ['GAUS'],
+    'bell':       ['GAUS'],
+    'logistic':   ['LGST'],
+    'chaos':      ['LRNZ','LGST'],
+    'pythagoras': ['PYTH'],
+    'spiro':      ['SPIR'],
+    'spirograph': ['SPIR'],
+    'lissajous':  ['LISS'],
+    'navier':     ['NAVI'],
+    'flow':       ['NAVI'],
+    'clifford':   ['CLIF'],
+    'heart':      ['HART'],
+  };
+  const longest = Math.max(...Object.keys(SUMMONS).map(k=>k.length));
+  let buf = '';
+  let timer = null;
+
+  function summon(codes){
+    const code = codes[Math.floor(Math.random()*codes.length)];
+    const pool = ITEMS_BY_CODE[code] || [];
+    if (!pool.length) return false;
+    const pick = pool[Math.floor(Math.random()*pool.length)];
+    // If a modal is open, close first
+    if (fmodalBg.classList.contains('open')) closeFormulaModal();
+    if (modalBg.classList.contains('open')) closeModal();
+    setTimeout(()=>openModal(pick), 50);
+    try {
+      console.log(`%c◆ summoned ${code} · #${String(pick.id).padStart(4,'0')}`,
+        'color:#ffcc66;font-family:monospace;font-size:11px');
+    } catch(e){}
+    return true;
+  }
+
+  document.addEventListener('keydown', e=>{
+    // Ignore if user is typing in an input/textarea
+    const tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+    const ch = e.key;
+    if (ch && ch.length === 1 && /[a-zA-Z]/.test(ch)){
+      buf = (buf + ch.toLowerCase()).slice(-longest);
+      clearTimeout(timer);
+      timer = setTimeout(()=>{ buf=''; }, 1500);
+      // Match longest suffix
+      for (let len = Math.min(longest, buf.length); len >= 2; len--){
+        const tail = buf.slice(-len);
+        if (SUMMONS[tail]){
+          if (summon(SUMMONS[tail])){ buf=''; clearTimeout(timer); }
+          return;
+        }
+      }
+    }
+  });
 })();
 </script>
 
