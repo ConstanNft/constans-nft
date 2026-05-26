@@ -26,3 +26,10 @@ contract/deployment.*.json
 # bundles (regenerable)
 *.zip
 *.tar.gz
+
+# generator artifacts (rebuild via build_html.py)
+output/
+output_v2/
+formula-nft-part-*
+items_hd.json
+thumbs.json
